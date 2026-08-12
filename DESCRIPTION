@@ -1,0 +1,25 @@
+Package: CranioMorph
+Title: Geometric morphometric analysis of 3D Craniofacial Morphology
+Version: 0.0.1.9000
+Authors@R: 
+    person("Kristen", "Tran", , "kristen.tran1@ucalgary.ca", role = c("aut", "cre"))
+Description: Morphometric functions and wrappers for Morpho and geomorph as standards of morphometric analyses.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+  dplyr,
+  stringr,
+  ggplot2,
+  ggpubr,
+  Morpho,
+  geomorph,
+  rgl,
+  abind,
+  crayon,
+  paran
+Config/roxygen2/version: 8.1.0
+Depends: 
+    R (>= 3.5)
+LazyData: true
