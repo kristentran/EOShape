@@ -8,7 +8,6 @@ process_shapes(
   borealis,
   symmetrize = NULL,
   correction = "None",
-  automated = FALSE,
   silence = FALSE,
   ...
 )
@@ -16,9 +15,9 @@ process_shapes(
 \arguments{
 \item{borealis}{borealis object after metadata detection}
 
-\item{symmetrize}{borealis object after metadata detection}
+\item{symmetrize}{NULL, "Detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.}
 
-\item{automated}{if TRUE, ...}
+\item{correction}{"None", "Pooled", or variable (as column name) to split data.}
 
 \item{silence}{if TRUE, suppress printed messages from process_shapes and internal calls.}
 }

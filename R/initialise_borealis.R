@@ -33,15 +33,21 @@ initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silen
       aligned = FALSE,
       use_PC_scores = FALSE,
       imputed_meta = FALSE,
-      remove_size = TRUE
+      remove_size = TRUE,
+      assess_allometry = FALSE,
+      log_size = FALSE
     )
   } else {
     analysis_params$aligned = FALSE
     analysis_params$imputed_meta = FALSE
   }
 
+  if(analysis_params$remove_size && analysis_params$assess_allometry)
+    stop("Parameters remove_sizet' and assess_allometry cannot both be TRUE. Please reset analysis parameters.")
+
   # this will store analysis stuff to be passed from API
   analysis_log = character(0)
+
 
   # drop constant and NA-only meta variables
   constant_cols = names(select(data$meta, where(~ n_distinct(., na.rm = TRUE) == 1 | all(is.na(.)))))

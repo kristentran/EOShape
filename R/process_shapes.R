@@ -8,8 +8,8 @@
 #' variables included: sex, age, and centroid size).
 #'
 #' @param borealis borealis object after metadata detection
-#' @param symmetrize borealis object after metadata detection
-#' @param automated if TRUE, ...
+#' @param symmetrize NULL, "Detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.
+#' @param correction "None", "Pooled", or variable (as column name) to split data.
 #' @param silence if TRUE, suppress printed messages from process_shapes and internal calls.
 #'
 #' @return borealis object for subsequent analyses
@@ -17,17 +17,17 @@
 #' @export
 #'
 
-process_shapes = function(borealis, symmetrize = NULL, correction = "None", automated = FALSE, silence = FALSE, ...){
+process_shapes = function(borealis, symmetrize = NULL, correction = "None", silence = FALSE, ...){
   if(!inherits(borealis, "borealis"))
     stop("Object provided is not a borealis object. Please create using initialise_borealis().")
   if(!is.null(symmetrize) && !any(symmetrize == "detect", is.matrix(symmetrize), is.data.frame(symmetrize)))
     stop("symmetrize must be 'detect' or a data frame/matrix with two columns that specify landmark pairings by row.")
-  dependants = gsub("dependant_", "", colnames(borealis$meta)[grepl("dependant", colnames(borealis$meta))])
-  correction = gsub("dependant_", "", correction)
-  if(!any(correction %in% c("None", "Pooled", dependants)))
+  independants = gsub("independant_", "", colnames(borealis$meta)[grepl("independant", colnames(borealis$meta))])
+  correction = gsub("independant_", "", correction)
+  if(!any(correction %in% c("None", "Pooled", independants)))
     stop("correction argument should be 'None', 'Pooled', or the column name of the group to split data.")
-  if(!is.logical(automated) || !is.logical(silence) || length(automated) > 1 || length(silence) > 1)
-    stop("automated and silence parameters must be single value logicals")
+  if(!is.logical(silence) || length(silence) > 1)
+    stop("silence parameters must be single value logicals")
 
   # symmetry
   # if NULL, don't provide any argument to procSym
@@ -61,7 +61,7 @@ process_shapes = function(borealis, symmetrize = NULL, correction = "None", auto
 
   # if we want to remove size, then add to metadata
   if(borealis$analysis_params$remove_size)
-    borealis$meta$logsize = log(gpa$size)
+    borealis$meta$size = log(gpa$size)
 
   # if PCA true, replace lmks with pc_scores
   if(borealis$analysis_params$use_PC_scores){
@@ -75,12 +75,12 @@ process_shapes = function(borealis, symmetrize = NULL, correction = "None", auto
       borealis$meta$age3 = borealis$meta$age^3
     }
 
-    # done this way (as opposed to !dependants) to ensure a consistent order of covariates
-    covs = cbind(borealis$meta[,colnames(borealis$meta) %in% c("sex", "logsize"), drop = FALSE],
+    # done this way (as opposed to !independants) to ensure a consistent order of covariates
+    covs = cbind(borealis$meta[,colnames(borealis$meta) %in% c("sex", "size"), drop = FALSE],
                  borealis$meta[,grepl("age", colnames(borealis$meta)), drop = FALSE],
                  borealis$meta[,grepl("confounder", colnames(borealis$meta)), drop = FALSE])
 
-    group_split = if(correction == "Pooled") NULL else borealis$meta[,paste0("dependant_", correction)]
+    group_split = if(correction == "Pooled") NULL else borealis$meta[,paste0("independant_", correction)]
     mod = residualise(borealis$shapes, covs = covs, interactions = TRUE, group = group_split, silence = silence, ...)
 
     borealis$shapes = mod$corrected_shapes
@@ -95,7 +95,7 @@ process_shapes = function(borealis, symmetrize = NULL, correction = "None", auto
     }
   }
 
-  borealis$logsize = log(gpa$size)
+  borealis$size = if(borealis$analysis_params$log_size) log(gpa$size) else gpa$size
 
   return(borealis)
 }

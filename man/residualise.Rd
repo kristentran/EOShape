@@ -28,7 +28,7 @@ residualise(
 
 \item{force}{if TRUE, then the correction will always occur after evaluate_model().}
 
-\item{group}{vector of same length as shapes and cov. If provided, performs shape correction independently (within groups).}
+\item{group}{vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).}
 
 \item{silence}{if TRUE, suppress printed messages from evaluate_model().}
 }

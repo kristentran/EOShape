@@ -13,7 +13,7 @@
 #' @param p_threshold numerical between 0 and 1. Determine required significance of covariates before removing from the model
 #' @param model procD.lm object. if provided, correct based provided model (bypass evaluate_model())
 #' @param force if TRUE, then the correction will always occur after evaluate_model().
-#' @param group vector of same length as shapes and cov. If provided, performs shape correction independently (within groups).
+#' @param group vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).
 #' @param silence if TRUE, suppress printed messages from evaluate_model().
 #'
 #' @return model model used for shape correction.

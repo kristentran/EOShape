@@ -8,11 +8,11 @@
 #'
 #' @param borealis borealis object initialised with \code{initialise_borealis()}
 #' @param column_definitions optional named list with elements ID, Sex, Age,
-#'   Confounders (or Confounder), and Dependants (or Dependant) — column indices
+#'   Confounders (or Confounder), and independants (or independant) — column indices
 #'   into \code{borealis$meta}. When supplied, these are used as-is with no
 #'   detection or automated overwrite.
 #' @param automated if TRUE and \code{column_definitions} is NULL, detect ID/Sex/Age,
-#'  take the first remaining column as the dependant, and assume no confounders.
+#'  take the first remaining column as the independant, and assume no confounders.
 #'  If FALSE and \code{column_definitions} is NULL, prompt interactively.
 #'  Ignored for column selection when \code{column_definitions} is supplied
 #'  (still skips interactive confirmation when TRUE).
@@ -39,11 +39,13 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
   extracted = borealis$meta
   n_col = ncol(extracted)
 
+  # check if values can be converted to a numeric
   is_numeric_like = function(x){
     vals = na.omit(x)
     length(vals) > 0 && all(!is.na(suppressWarnings(as.numeric(as.character(vals)))))
   }
 
+  # extract the first matching column
   first_matching_col = function(predicate, exclude = numeric(0)){
     for(i in setdiff(seq_len(n_col), exclude)){
       if(predicate(extracted[[i]]))
@@ -52,8 +54,9 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
     return(numeric(0))
   }
 
+  # function for interactive prompts
   prompt_cols = function(label, allow_multiple = FALSE){
-    if(automated)
+    if(automated) # if automated, return empty numeric
       return(numeric(0))
 
     if(label %in% c("Sex", "Age")){
@@ -75,7 +78,7 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
   accepted = FALSE
   while(!accepted){
     # If column_definitions is supplied, use it as-is — no detection or
-    # automated overwrite of Dependant / Confounder.
+    # automated overwrite of independant / Confounder.
     if(!is.null(column_definitions)){
       ID_col = column_definitions[["ID"]]
       sex_col = column_definitions[["Sex"]]
@@ -83,15 +86,15 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
       confounder_col = column_definitions[["Confounders"]]
       if(is.null(confounder_col))
         confounder_col = column_definitions[["Confounder"]]
-      dependant_col = column_definitions[["Dependants"]]
-      if(is.null(dependant_col))
-        dependant_col = column_definitions[["Dependant"]]
+      independant_col = column_definitions[["independants"]]
+      if(is.null(independant_col))
+        independant_col = column_definitions[["independant"]]
 
       if(is.null(ID_col)) ID_col = numeric(0)
       if(is.null(sex_col)) sex_col = numeric(0)
       if(is.null(age_col)) age_col = numeric(0)
       if(is.null(confounder_col)) confounder_col = numeric(0)
-      if(is.null(dependant_col)) dependant_col = numeric(0)
+      if(is.null(independant_col)) independant_col = numeric(0)
     } else {
       ID_col = first_matching_col(function(x) !any(duplicated(x)))
       if(!length(ID_col))
@@ -115,11 +118,11 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
 
       if(automated){
         remaining = setdiff(seq_len(n_col), c(ID_col, sex_col, age_col))
-        dependant_col = if(length(remaining)) remaining[[1]] else numeric(0)
+        independant_col = if(length(remaining)) remaining[[1]] else numeric(0)
         confounder_col = numeric(0)
       } else {
         confounder_col = prompt_cols("confounder", allow_multiple = TRUE)
-        dependant_col = prompt_cols("dependant", allow_multiple = TRUE)
+        independant_col = prompt_cols("independant", allow_multiple = TRUE)
       }
     }
 
@@ -127,11 +130,11 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
       stop("column_definitions must include ID (column index of unique specimen identifiers).")
 
     derived = data.frame(identifiers = extracted[,ID_col], stringsAsFactors = FALSE)
-    for(colu in c("sex_col", "age_col", "confounder_col", "dependant_col")){
+    for(colu in c("sex_col", "age_col", "confounder_col", "independant_col")){
       idx = get0(colu)
       if(!length(idx)) next
       df = extracted[, idx, drop = FALSE]
-      names(df) = if(any(colu %in% c("confounder_col", "dependant_col"))) paste0(gsub("_col", "", colu), "_", names(df)) else gsub("_col", "", colu)
+      names(df) = if(any(colu %in% c("confounder_col", "independant_col"))) paste0(gsub("_col", "", colu), "_", names(df)) else gsub("_col", "", colu)
       for(j in seq_along(df)){
         if(is_numeric_like(df[[j]]))
           df[[j]] = as.numeric(df[[j]])

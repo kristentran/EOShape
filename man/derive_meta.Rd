@@ -16,12 +16,12 @@ derive_meta(
 \item{borealis}{borealis object initialised with \code{initialise_borealis()}}
 
 \item{column_definitions}{optional named list with elements ID, Sex, Age,
-Confounders (or Confounder), and Dependants (or Dependant) — column indices
+Confounders (or Confounder), and independants (or independant) — column indices
 into \code{borealis$meta}. When supplied, these are used as-is with no
 detection or automated overwrite.}
 
 \item{automated}{if TRUE and \code{column_definitions} is NULL, detect ID/Sex/Age,
-take the first remaining column as the dependant, and assume no confounders.
+take the first remaining column as the independant, and assume no confounders.
 If FALSE and \code{column_definitions} is NULL, prompt interactively.
 Ignored for column selection when \code{column_definitions} is supplied
 (still skips interactive confirmation when TRUE).}
