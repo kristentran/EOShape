@@ -6,16 +6,13 @@
 #' @param col_manual colours for unique values of group_by_colour. If NULL, use default colours.
 #' @param group_by_shape groups to split by shape in biplots (vector of length n).
 #' @param show_legend if TRUE, show legend on right side.
-#' @param mean_shape if provided with atlas_lmks, create mesh3d objects to visualize each CV specified in cvs.
+#' @param mean_shape mean shape corresponding to PCA rotation. Provide
 #' @param pca_rotation rotation matrix from PCA to convert back to real shapes for mesh3d objects. Necessary if the data input to CVA were PC scores.
 #' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualize each CV specified in cvs.
 #' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each CV specified in cvs. Necessary if the atlas_lmks != atlas_mesh vertices.
 #'
 #' @return plots contains density and biplots for all CVs.
 #' @return morphs mesh3d objects of shapes reflecting scores of -3 and +3 along each CV.
-#'
-#' @import ggplot2
-#' @import ggpubr
 #'
 #' @export
 
@@ -28,7 +25,8 @@ visualise_cvs = function(cva,
                          mean_shape = NULL,
                          pca_rotation = NULL,
                          atlas_mesh = NULL,
-                         atlas_lmks = NULL
+                         atlas_lmks = NULL,
+                         fromWeb = FALSE
 ){
   if(is.null(cvs)){
     cvs = 1:ncol(cva$CV)
@@ -40,46 +38,75 @@ visualise_cvs = function(cva,
   plots = list()
   morphs = list()
 
-  if(is.null(group_by_colour))
-    group_by_colour = cva$groups
-  custom_theme = get_theme()
+  # Only create ggplots if not from tool
+  if(!fromWeb){
+    if(is.null(group_by_colour))
+      group_by_colour = cva$groups
+    custom_theme = get_theme()
 
-  if(is.null(col_manual)){
-    col_manual = get_palette(group_by_colour = group_by_colour)
-  } else if(length(col_manual) >= length(unique(group_by_colour))){
-    col_manual = col_manual[1:length(unique(group_by_colour))]
-  } else {stop("Not enough colours provided for col_manual")}
+    if(is.null(col_manual)){
+      col_manual = get_palette(group_by_colour = group_by_colour)
+    } else if(length(col_manual) >= length(unique(group_by_colour))){
+      col_manual = col_manual[1:length(unique(group_by_colour))]
+    } else {stop("Not enough colours provided for col_manual")}
 
-  if(length(evencvs) != 0) {
-    for(i in 1:length(xaxes)){
-      xindex = xaxes[i]; yindex = yaxes[i]
-      if(!is.na(xindex) & !is.na(yindex)){
-        plots[[paste0("CV",xindex,"vs",yindex)]] = biplot(cva$CVscores[,xindex], cva$CVscores[,yindex], group_by_colour = group_by_colour, col_manual = col_manual, group_by_shape = group_by_shape,
-                                                          x_title = paste0("CV", xindex), y_title = paste0("CV", yindex))}}}
-
-  for (i in cvs){
-    plots[[paste0("CV",i)]] = plotdensity(x = cva$CVscores[,i], group_by_colour = group_by_colour, col_manual = col_manual, title = paste0("CV",i), show_legend = TRUE)
-
-    if(!is.null(atlas_mesh)){
-      if(length(levels(cva$groups)) == 2){
-        vis_score = sort(c(mean(cva$CVscores[cva$groups == levels(cva$groups)[1]]), mean(cva$CVscores[cva$groups == levels(cva$groups)[2]])))
-      } else {
-        vis_score = c(-3, 3)*sd(cva$CVscores[,i])
-      }
-      if(!is.null(ncol(cva$Grandm))){
-        CVmin <- vis_score[1]*matrix(cva$CVvis[,i],nrow(cva$Grandm),ncol(cva$Grandm))+cva$Grandm
-        CVmax <- vis_score[2]*matrix(cva$CVvis[,i],nrow(cva$Grandm),ncol(cva$Grandm))+cva$Grandm
-      } else if(!is.null(mean_shape) & !is.null(pca_rotation)){
-        CVmin = vis_score[1]*cva$CVvis[,i] + cva$Grandm
-        CVmax = vis_score[2]*cva$CVvis[,i] + cva$Grandm
-        CVmin = mean_shape + convert(t(as.matrix(pca_rotation) %*% CVmin))
-        CVmax = mean_shape + convert(t(as.matrix(pca_rotation) %*% CVmax))
-      }
-      if(exists("CVmin") & exists("CVmax")){
-        morphs[[paste0("CV",i,"_min")]] = shapeshifter(CVmin, atlas_mesh, atlas_lmks)
-        morphs[[paste0("CV",i,"_max")]] = shapeshifter(CVmax, atlas_mesh, atlas_lmks)}
-    } else {vis_score = NULL}
+    # create biplots for CVs
+    if(length(evencvs) != 0) {
+      for(i in 1:length(xaxes)){
+        xindex = xaxes[i]; yindex = yaxes[i]
+        if(!is.na(xindex) & !is.na(yindex)){
+          plots[[paste0("CV",xindex,"vs",yindex)]] = biplot(cva$CVscores[,xindex], cva$CVscores[,yindex], group_by_colour = group_by_colour, col_manual = col_manual, group_by_shape = group_by_shape,
+                                                            x_title = paste0("CV", xindex), y_title = paste0("CV", yindex))}}}
   }
+  for (i in cvs){
+    # Create CV density plots if not from tool
+    if(!fromWeb)
+      plots[[paste0("CV",i)]] = plotdensity(x = cva$CVscores[,i], group_by_colour = group_by_colour, col_manual = col_manual, title = paste0("CV",i), show_legend = TRUE)
 
+    # CALCULATING SHAPES
+    # Decide scores to visualise: if there are 2 groups, visualise group mean scores, else +/- 3SD
+    if(length(levels(cva$groups)) == 2){ # 2 levels = 1 CV therefore it doesn't matter that groupmeans is all CVs compared to per CV in the else condition.
+      # ascending order of mean PC scores
+      for(j in nrow(cva$groupmeans)){
+        tmpshape = cva$groupmeans[j,]
+        if(!is.null(mean_shape) & !is.null(pca_rotation)){
+          # if pc scores provided
+          tmpshape = mean_shape + convert(t(as.matrix(pca_rotation) %*% tmpshape))
+        }
+        morphs[[rownames(cva$groupmeans)[j]]] = tmpshape
+      }
+      # save mean CV score by group to vis_score
+      vis_score = tapply(cva$CVscores[, i], cva$groups, mean)
+    } else {
+      vis_score = c(-3, 3)*sd(cva$CVscores[,i]) + mean(cva$CVscores[,i])
+
+      # Calculate shapes from vis_scores:
+      for(extreme in c("min", "max")){
+        vis_ind = ifelse(extreme == "min", 1, 2)
+        if(!is.null(mean_shape) & !is.null(pca_rotation)){
+          # if pc scores provided
+          CVextreme = vis_score[vis_ind]*cva$CVvis[,i] + cva$Grandm
+          CVextreme = mean_shape + convert(t(as.matrix(pca_rotation) %*% CVextreme))
+        } else {
+          # if coordinates provided
+          if(!is.null(ncol(cva$Grandm))){ # if shapes in 3d format
+            CVextreme = vis_score[vis_ind]*matrix(cva$CVvis[,i],nrow(cva$Grandm),ncol(cva$Grandm))+cva$Grandm
+          } else { #if shapes in 2d format
+            CVextreme = matrix((vis_score[vis_ind]*cva$CVvis[,i]+cva$Grandm), nrow = length(cva$Grandm)/3, ncol = 3, byrow = TRUE)
+          }
+        }
+
+        if(exists("CVextreme")){
+          if(!is.null(atlas_mesh)){
+            CVextreme = shapeshifter(CVextreme, atlas_mesh, atlas_lmks)
+            CVmax = shapeshifter(CVmax, atlas_mesh, atlas_lmks)
+          }
+          # store morphs as landmarks or meshes
+          morphs[[paste0("CV",i,"_",extreme)]] = CVextreme
+          rm(CVextreme)
+        }
+      } # end of max min loop
+    }
+  } # end of CV loop
   return(list(plots = plots, morphs = morphs, vis_score = vis_score))
 }

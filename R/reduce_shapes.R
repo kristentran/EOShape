@@ -103,18 +103,24 @@ reduce_shapes <- function(
       print(pca$scree)
     if(!reduce && !silence)
       cat(blue(bold(n_pc, "PCs to be retained, explaining", round(pca$var_cumulative[n_pc]*100,digits = 1),"% of total variance.")))
+  }
 
-    # provide min and max landmark coordinates for the last PC included
-    if(!is.null(atlas_mesh)){
-      # dummy matrix
-      pc_dummies <- matrix(0, nrow = 2, ncol = length(pca$sdev))
-      pc_dummies[1,n_pc] <- mean(pca$x[,n_pc]) + pca$sdev[n_pc]*3
-      pc_dummies[2,n_pc] <- mean(pca$x[,n_pc]) - pca$sdev[n_pc]*3
-      mean_shape = convert(as.vector(suppressWarnings(mshape(coords))))
-      PCmin = mean_shape + convert(t(as.matrix(pca$rotation) %*% pc_dummies[1,]))
-      PCmax = mean_shape + convert(t(as.matrix(pca$rotation) %*% pc_dummies[2,]))
-      pca[[paste0("threshold_min")]] = shapeshifter(PCmin, atlas_mesh, atlas_lmks)
-      pca[[paste0("threshold_max")]] = shapeshifter(PCmax, atlas_mesh, atlas_lmks)}
+  # provide min and max landmark coordinates for the last PC included
+  if(!is.null(atlas_mesh)){
+    # dummy matrix
+    pc_dummies <- matrix(0, nrow = 2, ncol = length(pca$sdev))
+    pc_dummies[1,n_pc] <- mean(pca$x[,n_pc]) + pca$sdev[n_pc]*3
+    pc_dummies[2,n_pc] <- mean(pca$x[,n_pc]) - pca$sdev[n_pc]*3
+    mean_shape = convert(as.vector(suppressWarnings(mshape(coords))))
+    PCmin = mean_shape + convert(t(as.matrix(pca$rotation) %*% pc_dummies[1,]))
+    PCmax = mean_shape + convert(t(as.matrix(pca$rotation) %*% pc_dummies[2,]))
+
+    if(!fromWeb){
+      PCmin = shapeshifter(PCmin, atlas_mesh, atlas_lmks)
+      PCmax = shapeshifter(PCmax, atlas_mesh, atlas_lmks)
+    }
+    pca[[paste0("threshold_min")]] = PCmin
+    pca[[paste0("threshold_max")]] = PCmax
   }
 
   if(reduce == TRUE){

@@ -9,7 +9,8 @@ evaluate_model(
   covs,
   interactions = TRUE,
   p_threshold = 0.05,
-  silence = FALSE
+  silence = FALSE,
+  force = FALSE
 )
 }
 \arguments{
@@ -22,12 +23,18 @@ evaluate_model(
 \item{p_threshold}{numerical between 0 and 1. Required significance to retain covariates.}
 
 \item{silence}{if TRUE, suppress printed model evaluation messages.}
+
+\item{force}{if TRUE, skip stepwise term selection and return the starting
+model (all covariates, and pairwise interactions if \code{interactions = TRUE})
+as the final model.}
 }
 \value{
 starting_model procD.lm object with all covariates provided.
 
-final_model procD.lm object with only significant covariates.
+final_model procD.lm object with only significant covariates, or the
+starting model when \code{force = TRUE}.
 }
 \description{
 Model shapes ~ covariates using procD.lm. Identify which covariates are significant and provide final model.
+If \code{force = TRUE}, skip term selection and use the full covariate set.
 }

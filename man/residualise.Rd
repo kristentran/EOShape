@@ -26,7 +26,9 @@ residualise(
 
 \item{model}{procD.lm object. if provided, correct based provided model (bypass evaluate_model())}
 
-\item{force}{if TRUE, then the correction will always occur after evaluate_model().}
+\item{force}{if TRUE, pass \code{force} to \code{evaluate_model()} so the full
+covariate set is retained, and always apply the correction even if no terms
+are significant.}
 
 \item{group}{vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).}
 
@@ -42,6 +44,6 @@ Correct shapes by chosen covariates using a linear model. Uses workhorse
 function evaluate_model() to determine which covariates are significant and
 will be included in the model. If there are ANY significant terms in the
 final evaluated model, then the mean shape will be added back to the
-residuals of the model.
-TODO: fix the force to run through evaluate_model to allow for more control.
+residuals of the model. If \code{force = TRUE}, the full covariate set is
+retained and correction always occurs.
 }

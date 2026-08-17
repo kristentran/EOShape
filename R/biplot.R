@@ -11,6 +11,8 @@
 #'
 #' @return ggplot2 object
 #'
+#' @import ggplot2
+#' @import ggpubr
 #' @export
 
 biplot = function(x, y, group_by_colour = NULL, col_manual = NULL, group_by_shape = NULL, x_title = NULL, y_title = NULL, show_legend = TRUE){

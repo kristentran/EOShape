@@ -32,6 +32,7 @@ initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silen
     analysis_params = list(
       aligned = FALSE,
       use_PC_scores = FALSE,
+      reduce_shape_dimensions = "method",
       imputed_meta = FALSE,
       remove_size = TRUE,
       assess_allometry = FALSE,

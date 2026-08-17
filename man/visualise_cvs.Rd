@@ -14,7 +14,8 @@ visualise_cvs(
   mean_shape = NULL,
   pca_rotation = NULL,
   atlas_mesh = NULL,
-  atlas_lmks = NULL
+  atlas_lmks = NULL,
+  fromWeb = FALSE
 )
 }
 \arguments{
@@ -30,7 +31,7 @@ visualise_cvs(
 
 \item{show_legend}{if TRUE, show legend on right side.}
 
-\item{mean_shape}{if provided with atlas_lmks, create mesh3d objects to visualize each CV specified in cvs.}
+\item{mean_shape}{mean shape corresponding to PCA rotation. Provide}
 
 \item{pca_rotation}{rotation matrix from PCA to convert back to real shapes for mesh3d objects. Necessary if the data input to CVA were PC scores.}
 

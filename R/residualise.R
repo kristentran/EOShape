@@ -4,15 +4,17 @@
 #' function evaluate_model() to determine which covariates are significant and
 #' will be included in the model. If there are ANY significant terms in the
 #' final evaluated model, then the mean shape will be added back to the
-#' residuals of the model.
-#' TODO: fix the force to run through evaluate_model to allow for more control.
+#' residuals of the model. If \code{force = TRUE}, the full covariate set is
+#' retained and correction always occurs.
 #'
 #' @param shapes 2d matrix or 3d array
 #' @param covs data frame with identifiers as rownames and all covariates to be included in the model as columns.
 #' @param interactions if TRUE, include all possible interactions.
 #' @param p_threshold numerical between 0 and 1. Determine required significance of covariates before removing from the model
 #' @param model procD.lm object. if provided, correct based provided model (bypass evaluate_model())
-#' @param force if TRUE, then the correction will always occur after evaluate_model().
+#' @param force if TRUE, pass \code{force} to \code{evaluate_model()} so the full
+#'   covariate set is retained, and always apply the correction even if no terms
+#'   are significant.
 #' @param group vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).
 #' @param silence if TRUE, suppress printed messages from evaluate_model().
 #'
@@ -29,7 +31,7 @@
 residualise = function(shapes, covs, interactions = FALSE, p_threshold = 0.05, model = NULL, force = FALSE,
                        group = NULL, silence = FALSE){
   stopifnot(is.data.frame(covs),is.logical(interactions),is.array(shapes)|is.matrix(shapes), length(dim(shapes)) %in% c(2,3))
-  if(!is.null(group)){stopifnot(dim(shapes)[3] == length(group), is.vector(group))}
+  if(!is.null(group)){stopifnot(is.vector(group))}
 
   if(length(dim(shapes)) == 3)
     shapes = geomorph::two.d.array(shapes)
@@ -62,7 +64,7 @@ residualise = function(shapes, covs, interactions = FALSE, p_threshold = 0.05, m
 
     # evaluate per group when model is not supplied; do not reuse a prior group's fit
     if(is.null(model)){
-      this_model = evaluate_model(shapes = shape, covs = cov, interactions = interactions, p_threshold = p_threshold, silence = silence)$final_model
+      this_model = evaluate_model(shapes = shape, covs = cov, interactions = interactions, p_threshold = p_threshold, silence = silence, force = force)$final_model
     } else {
       stopifnot(any(class(model) %in% c("procD.lm", "lm.rrpp")))
       this_model = model

@@ -10,6 +10,7 @@
 #' @return ggplot2 object
 #'
 #' @import ggplot2
+#' @import ggpubr
 #' @export
 
 plotdensity = function(x, group_by_colour = NULL, col_manual = NULL, lim = NULL, title = NULL, show_legend = FALSE){

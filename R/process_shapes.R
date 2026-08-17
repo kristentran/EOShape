@@ -29,7 +29,7 @@ process_shapes = function(borealis, symmetrize = NULL, correction = "None", sile
   if(!is.logical(silence) || length(silence) > 1)
     stop("silence parameters must be single value logicals")
 
-  # symmetry
+  # Symmetry
   # if NULL, don't provide any argument to procSym
   # if "detect" use detect_symmetry
   # if data frame or matrix with two columns, directly send to procSym
@@ -65,8 +65,10 @@ process_shapes = function(borealis, symmetrize = NULL, correction = "None", sile
 
   # if PCA true, replace lmks with pc_scores
   if(borealis$analysis_params$use_PC_scores){
-    borealis$pca = reduce_shapes(borealis$lmks, silence = silence, ...)
+    borealis$pca = reduce_shapes(borealis$lmks, silence = silence, method = borealis$analysis_params$reduce_shape_dimensions, fromWeb = TRUE)
     borealis$shapes = borealis$pca$x
+  } else {
+    borealis$pca = reduce_shapes(borealis$lmks, silence = silence, method = 98, fromWeb = TRUE)
   }
 
   if(correction != "None"){
