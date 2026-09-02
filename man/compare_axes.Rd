@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_axes.R
 \name{compare_axes}
 \alias{compare_axes}
-\title{Measure shape vector alignment}
+\title{Measure shape vector alignment - INCOMPLETE}
 \usage{
 compare_axes(
   shapes,

@@ -27,28 +27,29 @@ initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silen
 
   class(data) = "borealis"
 
-  # store analysis parameters
+  default_params = list(
+    aligned = FALSE,
+    use_PC_scores = FALSE,
+    reduce_shapes_method = "parallel",
+    remove_size = TRUE,
+    assess_allometry = FALSE,
+    log_size = FALSE
+  )
+
+  # Set up analysis parameters
   if(is.null(analysis_params)){
-    analysis_params = list(
-      aligned = FALSE,
-      use_PC_scores = FALSE,
-      reduce_shape_dimensions = "method",
-      imputed_meta = FALSE,
-      remove_size = TRUE,
-      assess_allometry = FALSE,
-      log_size = FALSE
-    )
-  } else {
-    analysis_params$aligned = FALSE
-    analysis_params$imputed_meta = FALSE
+    analysis_params = default_params
+  } else { # if provided, check for missing parameters and fill in with default
+    missing = setdiff(names(default_params), names(analysis_params))
+    analysis_params[missing] = default_params[missing]
+    rm(missing)
   }
 
   if(analysis_params$remove_size && analysis_params$assess_allometry)
-    stop("Parameters remove_sizet' and assess_allometry cannot both be TRUE. Please reset analysis parameters.")
+    stop("Parameters 'remove_size' and 'assess_allometry' cannot both be TRUE. Please redo analysis parameters.")
 
   # this will store analysis stuff to be passed from API
   analysis_log = character(0)
-
 
   # drop constant and NA-only meta variables
   constant_cols = names(select(data$meta, where(~ n_distinct(., na.rm = TRUE) == 1 | all(is.na(.)))))
@@ -57,6 +58,7 @@ initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silen
 
   data$meta = select(data$meta, -any_of(constant_cols))
 
+  # $lmks must be in 3D format
   data$lmks = convert(data$lmks, silence = silence)
 
   # store things inside data

@@ -5,7 +5,7 @@
 \alias{sympair_748}
 \title{Symmetric pairings from BH lab's 748 landmark scheme.}
 \format{
-A data frame with 100 rows and 10 variables.
+An object of class \code{matrix} (inherits from \code{array}) with 349 rows and 2 columns.
 }
 \source{
 Me

@@ -30,7 +30,7 @@ residualise(
 covariate set is retained, and always apply the correction even if no terms
 are significant.}
 
-\item{group}{vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).}
+\item{group}{vector of same length as shapes and cov. If provided, perform shape correction independantly (within groups).}
 
 \item{silence}{if TRUE, suppress printed messages from evaluate_model().}
 }
@@ -38,6 +38,8 @@ are significant.}
 model model used for shape correction.
 
 corrected_shapes residuals of model added back to the mean shape
+
+log character vector describing the final correction model(s).
 }
 \description{
 Correct shapes by chosen covariates using a linear model. Uses workhorse

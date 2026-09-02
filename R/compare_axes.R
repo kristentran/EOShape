@@ -1,4 +1,4 @@
-#' Measure shape vector alignment
+#' Measure shape vector alignment - INCOMPLETE
 #'
 #' Each Model's shape vector is defined as the vector between the mutant and control. Alignment is measured by either cosine similarity (default) or correlation.
 #'
@@ -16,7 +16,6 @@
 #'
 #' @import ggplot2
 #' @import Morpho
-#' @export
 
 #TODO: make compatible with 3D format
 compare_axes = function(shapes,

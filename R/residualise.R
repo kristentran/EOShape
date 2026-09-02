@@ -15,11 +15,12 @@
 #' @param force if TRUE, pass \code{force} to \code{evaluate_model()} so the full
 #'   covariate set is retained, and always apply the correction even if no terms
 #'   are significant.
-#' @param group vector of same length as shapes and cov. If provided, performs shape correction independantly (within groups).
+#' @param group vector of same length as shapes and cov. If provided, perform shape correction independantly (within groups).
 #' @param silence if TRUE, suppress printed messages from evaluate_model().
 #'
 #' @return model model used for shape correction.
 #' @return corrected_shapes residuals of model added back to the mean shape
+#' @return log character vector describing the final correction model(s).
 #'
 #' @import geomorph
 #'
@@ -47,12 +48,14 @@ residualise = function(shapes, covs, interactions = FALSE, p_threshold = 0.05, m
   input_ids = rownames(shapes)
 
   # get group index
-  if(is.null(group)){
+  pooled = is.null(group)
+  if(pooled){
     groups = 1; group = rep(1, nrow(covs))
   } else {
     groups = unique(group)
   }
 
+  log = c()
   results = list()
   for (i in 1:length(groups)){
     ind = as.logical(group == groups[i])
@@ -73,18 +76,27 @@ residualise = function(shapes, covs, interactions = FALSE, p_threshold = 0.05, m
 
     if(!force && all(this_model$aov.table[setdiff(rownames(this_model$aov.table), c("Residuals", "Total")),"Pr(>F)"] > 0.05)){
       corrected_shapes = shape
-      warning("No shape effects in the model were significant. Shapes were not corrected.")
+      warning("Shapes were not corrected because no covariates in the model were significant.")
       this_model = "Not corrected"
-    } else {
-      mean_shape = colMeans(shape)
 
-      # if(length(dim(shape)) == 3){
-        mean_shape = matrix(mean_shape, nrow(residuals), ncol(residuals), byrow = TRUE)
-      # } else {
-      #   residuals = convert(residuals)
-      #   mean_shape = array(convert(mean_shape), dim = dim(residuals))}
+      if(pooled)
+        log = c(log, "Shapes were not corrected because no covariates in the model were significant.")
+      else
+        log = c(log, paste0("Shapes in group ", groups[i], " were not corrected because no covariates were significant."))
+    } else {
+      # Create matrix for mean shape, same dimensions as data
+      mean_shape = colMeans(shape)
+      mean_shape = matrix(mean_shape, nrow(residuals), ncol(residuals), byrow = TRUE)
+
+      # correct shapes
       corrected_shapes = residuals + mean_shape
       rownames(corrected_shapes) = rownames(shape)
+
+      form_txt = paste("shapes ~", paste(this_model$term.labels, collapse = " + "))
+      if(pooled)
+        log = c(log, paste0("Shapes corrected by final model: ", form_txt))
+      else
+        log = c(log, paste0("Shapes in group ", groups[i], " corrected by final model: ", form_txt))
     }
     result = list(corrected_shapes = corrected_shapes, model = this_model)
     results[[paste0("group", i)]] = result
@@ -102,6 +114,8 @@ residualise = function(shapes, covs, interactions = FALSE, p_threshold = 0.05, m
     results = unlist(results, recursive = FALSE, use.names = TRUE)
     names(results) = gsub(".*\\.", "", names(results))
   }
+
+  results$log = log
 
   class(results) = "residualised"
   return(results)

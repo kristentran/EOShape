@@ -38,14 +38,16 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
 
   extracted = borealis$meta
   n_col = ncol(extracted)
+  n_row = nrow(extracted)
+  log = c()
 
-  # check if values can be converted to a numeric
+  # fx check if values can be converted to a numeric
   is_numeric_like = function(x){
     vals = na.omit(x)
     length(vals) > 0 && all(!is.na(suppressWarnings(as.numeric(as.character(vals)))))
   }
 
-  # extract the first matching column
+  # fx extract the first matching column
   first_matching_col = function(predicate, exclude = numeric(0)){
     for(i in setdiff(seq_len(n_col), exclude)){
       if(predicate(extracted[[i]]))
@@ -54,7 +56,7 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
     return(numeric(0))
   }
 
-  # function for interactive prompts
+  # fx for interactive prompts
   prompt_cols = function(label, allow_multiple = FALSE){
     if(automated) # if automated, return empty numeric
       return(numeric(0))
@@ -76,65 +78,67 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
   }
 
   accepted = FALSE
-  while(!accepted){
-    # If column_definitions is supplied, use it as-is — no detection or
-    # automated overwrite of independant / Confounder.
-    if(!is.null(column_definitions)){
-      ID_col = column_definitions[["ID"]]
-      sex_col = column_definitions[["Sex"]]
-      age_col = column_definitions[["Age"]]
-      confounder_col = column_definitions[["Confounders"]]
-      if(is.null(confounder_col))
-        confounder_col = column_definitions[["Confounder"]]
-      independant_col = column_definitions[["independants"]]
-      if(is.null(independant_col))
-        independant_col = column_definitions[["independant"]]
 
-      if(is.null(ID_col)) ID_col = numeric(0)
-      if(is.null(sex_col)) sex_col = numeric(0)
-      if(is.null(age_col)) age_col = numeric(0)
-      if(is.null(confounder_col)) confounder_col = numeric(0)
-      if(is.null(independant_col)) independant_col = numeric(0)
-    } else {
+  # Names of special columns
+  colspec = c("ID", "Sex", "Age", "Confounder", "Independant")
+
+  while(!accepted){
+    if(!is.null(column_definitions)){ # if provided, use as-is
+      for(colu in colspec){
+        assign(paste0(colu, "_col"), if(is.null(column_definitions[[colu]])) numeric(0) else column_definitions[[colu]])
+      }
+    } else { # if not provided
       ID_col = first_matching_col(function(x) !any(duplicated(x)))
       if(!length(ID_col))
         stop("No columns in metadata with unique values. Please include a column containing unique identifiers for each specimen in meta")
+      else
+        log = c(log, paste0("IDs automatically detected as column: ", ID_col))
 
-      sex_col = first_matching_col(function(x){
+      Sex_col = first_matching_col(function(x){
         vals = na.omit(x)
         if(!length(vals)) return(FALSE)
         if(all(toupper(as.character(vals)) %in% c("M", "F"))) return(TRUE)
         is_numeric_like(vals) && all(as.numeric(as.character(vals)) %in% c(0, 1))
       }, exclude = ID_col)
-      if(!length(sex_col))
-        sex_col = prompt_cols("Sex")
+      if(!length(Sex_col))
+        Sex_col = prompt_cols("Sex")
+      else
+        log = c(log, paste0("Sex automatically detected as column: ", Sex_col))
 
-      age_col = first_matching_col(function(x){
+
+      Age_col = first_matching_col(function(x){
         vals = na.omit(x)
         is_numeric_like(vals) && !all(as.numeric(as.character(vals)) %in% c(0, 1))
-      }, exclude = c(ID_col, sex_col))
-      if(!length(age_col))
-        age_col = prompt_cols("Age")
+      }, exclude = c(ID_col, Sex_col))
+      if(!length(Age_col))
+        Age_col = prompt_cols("Age")
+      else
+        log = c(log, paste0("Age automatically detected as column: ", Age_col))
 
+      # if automated, detect the first column of the remaining columns as independant, and no extra confounders
       if(automated){
-        remaining = setdiff(seq_len(n_col), c(ID_col, sex_col, age_col))
-        independant_col = if(length(remaining)) remaining[[1]] else numeric(0)
-        confounder_col = numeric(0)
+        remaining = setdiff(seq_len(n_col), c(ID_col, Sex_col, Age_col))
+        Independant_col = if(length(remaining)) remaining[[1]] else numeric(0)
+        Confounder_col = numeric(0)
+        log = c(log, paste0("Independant variable automatically detected as column: ", Independant_col), "No extra confounder variables used.")
       } else {
-        confounder_col = prompt_cols("confounder", allow_multiple = TRUE)
-        independant_col = prompt_cols("independant", allow_multiple = TRUE)
+        Confounder_col = prompt_cols("Confounder", allow_multiple = TRUE)
+        Independant_col = prompt_cols("Independant", allow_multiple = TRUE)
       }
     }
 
     if(!length(ID_col))
       stop("column_definitions must include ID (column index of unique specimen identifiers).")
 
+    # Start putting together new meta data frame
     derived = data.frame(identifiers = extracted[,ID_col], stringsAsFactors = FALSE)
-    for(colu in c("sex_col", "age_col", "confounder_col", "independant_col")){
+    for(colu in paste0(setdiff(colspec, "ID"), "_col")){
       idx = get0(colu)
       if(!length(idx)) next
       df = extracted[, idx, drop = FALSE]
-      names(df) = if(any(colu %in% c("confounder_col", "independant_col"))) paste0(gsub("_col", "", colu), "_", names(df)) else gsub("_col", "", colu)
+      prefix = tolower(gsub("_col", "", colu))
+      names(df) = if(prefix %in% c("confounder", "independant")) paste0(prefix, "_", names(df)) else prefix
+      # if columns look numeric, then convert
       for(j in seq_along(df)){
         if(is_numeric_like(df[[j]]))
           df[[j]] = as.numeric(df[[j]])
@@ -152,18 +156,26 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
     }
   }
 
-
   # If metadata is accepted, format:
-  if(length(sex_col) && "sex" %in% names(derived)){
+  if(length(Sex_col) && "sex" %in% names(derived)){ # factorise sex
     if(is.character(derived$sex) || is.factor(derived$sex))
       derived$sex = as.integer(toupper(as.character(derived$sex)) == "M")
     else
       derived$sex = as.integer(as.numeric(derived$sex) == 1)
   }
 
-  if(length(age_col) && "age" %in% names(derived))
+  if(length(Age_col) && "age" %in% names(derived)) # convert age to numeric if not already and remove any letters
     derived$age = as.numeric(gsub("\\D+", "", derived$age))
 
+  # if identifiers are all numeric, then add "ID_" prefix
+  if(any(!is.na(suppressWarnings(as.numeric(derived$identifiers))))){
+    derived$identifiers = paste0("ID_", derived$identifiers)
+    if(length(dimnames(borealis$lmks)[[3]] != length(derived$identifiers)))
+      stop("The number of samples in lmks and metadata do NOT match, and identifiers are numeric. Please change the identifiers to characters (e.g. ID001 not 001) to avoid errors in filtering and ordering.")
+    dimnames(borealis$lmks)[[3]] = derived$identifiers
+  }
+
+  # name lmks as identifiers
   if(is.null(dimnames(borealis$lmks)[[3]]))
     dimnames(borealis$lmks)[[3]] = derived$identifiers
 
@@ -178,29 +190,31 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
 
   if(impute){
     derived = mice::mice(derived, ...)
-    borealis$analysis_params$imputed_meta = derived$where
-    derived = complete(derived, 1)
     borealis$analysis_params$imputed_meta = TRUE
+    log = c(log, paste("Imputed metadata:", sum(derived$where)))
+    derived = complete(derived, 1)
   } else {
     derived = na.omit(derived)
   }
 
+  # filter and order
   identifiers = derived$identifiers
+  # filter to landmarks
   identifiers = identifiers[identifiers %in% dimnames(borealis$lmks)[[3]]]
-
+  # order metadata
   derived = derived[match(identifiers, derived$identifiers),]
+  # order landmarks
   borealis$lmks = borealis$lmks[,,identifiers]
-
-  if(any(!is.na(suppressWarnings(as.numeric(identifiers)))))
-    identifiers = paste0("ID_", identifiers)
 
   rownames(derived) = identifiers
   derived$identifiers = NULL
-  dimnames(borealis$lmks)[[3]] = identifiers
-
   borealis$meta = derived
-  borealis$analysis_log = c(borealis$analysis_log, "metadata automatically filtered for singular columns")
   borealis$identifiers = identifiers
 
+  # if samples were dropped, then log
+  if(n_row != nrow(derived))
+    log = c(log, paste0("Sample size before and after metadata detection: ", n_row, " and ", nrow(derived), ", respectively."))
+
+  borealis$analysis_log = c(borealis$analysis_log, log)
   return(borealis)
 }

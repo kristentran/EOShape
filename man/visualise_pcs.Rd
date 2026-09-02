@@ -13,7 +13,8 @@ visualise_pcs(
   show_legend = TRUE,
   mean_shape = NULL,
   atlas_mesh = NULL,
-  atlas_lmks = NULL
+  atlas_lmks = NULL,
+  fromWeb = FALSE
 )
 }
 \arguments{
