@@ -1,4 +1,4 @@
-# Morphometrics wrapper package for consistent analyses of 3D Shape.
+# Morphometrics wrapper package for consistent analyses of 3D Shape. - WIP
 Uses Morpho's and geomorph's core functions. Contains several basic functions that can be used as is and larger wrapper functions that connect these basic functions to an upcoming UI interface.
 This package is a work-in-progress and has only been tested on Ubuntu.
 
