@@ -1,20 +1,20 @@
 #' Initialize data object for automated analysis
 #'
-#' Initialize borealis object with a list object containing "lmks" as 3D array and "meta" as a data.frame.
+#' Initialize eos object with a list object containing "lmks" as 3D array and "meta" as a data.frame.
 #' Constant variables in meta will be dropped (i.e., variables with the same value across all individuals).
 #'
 #' @param data list object containing "lmks" as 3D array and "meta" as a data frame.
 #' @param atlas_mesh mesh of atlas for visualization. Provide if using package from R.
 #' @param atlas_lmks landmarks associated with atlas_mesh. Provide if using package from R and if landmarks =/= vertices from mesh.
 #'
-#' @return borealis object for subsequent analyses using borealis package
+#' @return eos object for subsequent analyses using the EOS package
 #'
 #' @import dplyr
 #'
 #' @export
 #'
 
-initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silence = FALSE, analysis_params = NULL){
+initialise_eos = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silence = FALSE, analysis_params = NULL){
   if(!is.list(data) || !all(c("lmks", "meta") %in% names(data)))
     stop("data must be a list object that contains meta (data frame) and lmks (array)")
   if(!is.null(atlas_lmks) && !is.matrix(atlas_lmks))
@@ -25,7 +25,7 @@ initialise_borealis = function(data, atlas_mesh = NULL, atlas_lmks = NULL, silen
   require(dplyr)
   require(crayon)
 
-  class(data) = "borealis"
+  class(data) = "eos"
 
   default_params = list(
     aligned = FALSE,

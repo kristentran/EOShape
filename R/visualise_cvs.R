@@ -99,7 +99,7 @@ visualise_cvs = function(cva,
         if(exists("CVextreme")){
           if(!is.null(atlas_mesh)){
             CVextreme = shapeshifter(CVextreme, atlas_mesh, atlas_lmks)
-            CVmax = shapeshifter(CVmax, atlas_mesh, atlas_lmks)
+            # CVmax = shapeshifter(CVmax, atlas_mesh, atlas_lmks)
           }
           # store morphs as landmarks or meshes
           morphs[[paste0("CV",i,"_",extreme)]] = CVextreme

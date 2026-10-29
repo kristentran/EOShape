@@ -11,6 +11,9 @@ visualise_pcs(
   col_manual = NULL,
   group_by_shape = NULL,
   show_legend = TRUE,
+  legend_size = NULL,
+  axis_title_size = NULL,
+  point_size = NULL,
   mean_shape = NULL,
   atlas_mesh = NULL,
   atlas_lmks = NULL,
@@ -29,6 +32,10 @@ visualise_pcs(
 \item{group_by_shape}{groups to split by shape in biplots (vector of length n).}
 
 \item{show_legend}{if TRUE, show legend on right side.}
+
+\item{legend_size}{legend text size passed to biplot(). Must be set here because the returned plot is a ggarrange grob, not a ggplot.}
+
+\item{axis_title_size}{axis title size passed to biplot().}
 
 \item{mean_shape}{if provided with atlas_lmks, create mesh3d objects to visualize each PC specified in pcs.}
 

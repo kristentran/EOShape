@@ -5,7 +5,7 @@
 \title{Find differences}
 \usage{
 find_diffs(
-  borealis,
+  eos,
   independant = "All",
   interactions = TRUE,
   silence = FALSE,
@@ -13,7 +13,7 @@ find_diffs(
 )
 }
 \arguments{
-\item{borealis}{borealis object after metadata detection}
+\item{eos}{eos object after metadata detection}
 
 \item{independant}{default to 'All' specified independant variables. Specify variable if only one is desired.}
 
@@ -22,14 +22,14 @@ find_diffs(
 \item{silence}{if TRUE, suppress printed messages from process_shapes and internal calls.}
 }
 \value{
-borealis object for subsequent analyses
+eos object for subsequent analyses
 }
 \description{
 Are there differences in csize and shape by independant variable(s)? Uses
 geomorph::procD.lm as the workhorse. If only one independant variable is
 provided and it is categorical, then post-hoc testing will be completed (if
 that variable has more than 2 levels). * note that this is an analysis fx, so
-the object returned are just results, not the borealis object
+the object returned are just results, not the eos object
 }
 \details{
 TODO: get landmark coordinates for HOW they differ if significant. If

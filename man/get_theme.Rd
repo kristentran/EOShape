@@ -4,7 +4,7 @@
 \alias{get_theme}
 \title{Get ggplot2 theme for consistent plots}
 \usage{
-get_theme(show_axes = FALSE)
+get_theme(show_axes = FALSE, legend_size = NULL, axis_title_size = NULL)
 }
 \description{
 Get ggplot2 theme for consistent plots

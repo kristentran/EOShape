@@ -6,10 +6,10 @@
 #' M = 1, F = 0). Age is detected as the first non-binary numeric-like variable
 #' that is not already used as ID or sex. Non-digits is removed from Age.
 #'
-#' @param borealis borealis object initialised with \code{initialise_borealis()}
+#' @param eos eos object initialised with \code{initialise_eos()}
 #' @param column_definitions optional named list with elements ID, Sex, Age,
 #'   Confounders (or Confounder), and independants (or independant) — column indices
-#'   into \code{borealis$meta}. When supplied, these are used as-is with no
+#'   into \code{eos$meta}. When supplied, these are used as-is with no
 #'   detection or automated overwrite.
 #' @param automated if TRUE and \code{column_definitions} is NULL, detect ID/Sex/Age,
 #'  take the first remaining column as the independant, and assume no confounders.
@@ -20,23 +20,23 @@
 #'  arguments will be passed to \code{mice::mice()}. if FALSE, missing data will
 #'  be removed
 #'
-#' @return borealis object for subsequent analyses
+#' @return eos object for subsequent analyses
 #'
 #' @export
 #'
 
-derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, impute = FALSE, ...){
+derive_meta = function(eos, column_definitions = NULL, automated = FALSE, impute = FALSE, ...){
   require(crayon)
 
-  if(!inherits(borealis, "borealis"))
-    stop("Object provided is not a borealis object. Please create using initialise_borealis().")
-  if(!"meta" %in% names(borealis) || !is.data.frame(borealis$meta))
-    stop("Please check meta in borealis object.")
+  if(!inherits(eos, "eos"))
+    stop("Object provided is not an eos object. Please create using initialise_eos().")
+  if(!"meta" %in% names(eos) || !is.data.frame(eos$meta))
+    stop("Please check meta in eos object.")
   # check if automated and impute are single value logicals
   if(!is.logical(automated) || !is.logical(impute) || length(automated) > 1 || length(impute) > 1)
     stop("automated and impute parameters must be single value logicals")
 
-  extracted = borealis$meta
+  extracted = eos$meta
   n_col = ncol(extracted)
   n_row = nrow(extracted)
   log = c()
@@ -170,14 +170,14 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
   # if identifiers are all numeric, then add "ID_" prefix
   if(any(!is.na(suppressWarnings(as.numeric(derived$identifiers))))){
     derived$identifiers = paste0("ID_", derived$identifiers)
-    if(length(dimnames(borealis$lmks)[[3]] != length(derived$identifiers)))
+    if(length(dimnames(eos$lmks)[[3]] != length(derived$identifiers)))
       stop("The number of samples in lmks and metadata do NOT match, and identifiers are numeric. Please change the identifiers to characters (e.g. ID001 not 001) to avoid errors in filtering and ordering.")
-    dimnames(borealis$lmks)[[3]] = derived$identifiers
+    dimnames(eos$lmks)[[3]] = derived$identifiers
   }
 
   # name lmks as identifiers
-  if(is.null(dimnames(borealis$lmks)[[3]]))
-    dimnames(borealis$lmks)[[3]] = derived$identifiers
+  if(is.null(dimnames(eos$lmks)[[3]]))
+    dimnames(eos$lmks)[[3]] = derived$identifiers
 
   # if impute is TRUE, then impute missing values. If not, remove NA rows
   if(impute && !automated){
@@ -190,7 +190,7 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
 
   if(impute){
     derived = mice::mice(derived, ...)
-    borealis$analysis_params$imputed_meta = TRUE
+    eos$analysis_params$imputed_meta = TRUE
     log = c(log, paste("Imputed metadata:", sum(derived$where)))
     derived = complete(derived, 1)
   } else {
@@ -200,21 +200,21 @@ derive_meta = function(borealis, column_definitions = NULL, automated = FALSE, i
   # filter and order
   identifiers = derived$identifiers
   # filter to landmarks
-  identifiers = identifiers[identifiers %in% dimnames(borealis$lmks)[[3]]]
+  identifiers = identifiers[identifiers %in% dimnames(eos$lmks)[[3]]]
   # order metadata
   derived = derived[match(identifiers, derived$identifiers),]
   # order landmarks
-  borealis$lmks = borealis$lmks[,,identifiers]
+  eos$lmks = eos$lmks[,,identifiers]
 
   rownames(derived) = identifiers
   derived$identifiers = NULL
-  borealis$meta = derived
-  borealis$identifiers = identifiers
+  eos$meta = derived
+  eos$identifiers = identifiers
 
   # if samples were dropped, then log
   if(n_row != nrow(derived))
     log = c(log, paste0("Sample size before and after metadata detection: ", n_row, " and ", nrow(derived), ", respectively."))
 
-  borealis$analysis_log = c(borealis$analysis_log, log)
-  return(borealis)
+  eos$analysis_log = c(eos$analysis_log, log)
+  return(eos)
 }

@@ -13,7 +13,7 @@
 #' @export
 
 plotbars = function(x, y = NULL, group_by_colour = NULL, col_manual = NULL, lim = NULL, title = NULL, show_legend = FALSE){
-  require(CranioMorph)
+  require(EOS)
   if(!is.null(y)){
     df = data.frame(x = x, y = y)
   } else {

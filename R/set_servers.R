@@ -16,10 +16,10 @@ set_servers = function(path, storage, renviron_path = "~/.Renviron", create = TR
   storage <- tolower(storage)
 
   if(storage == "mm"){
-    key = "CRANIOMORPH_MM_DATA_PATH"
+    key = "EOS_MM_DATA_PATH"
     suffix = "//Hallgrimsson//Mutant_Data//Adult"
   } else if(storage == "hs"){
-    key = "CRANIOMORPH_HS_DATA_PATH"
+    key = "EOS_HS_DATA_PATH"
     suffix = "//FaceBase_3//Data//Basic//Complete"
   } else {
     stop("storage must be either 'mm' or 'hs'")

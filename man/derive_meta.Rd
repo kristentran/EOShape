@@ -5,7 +5,7 @@
 \title{Set up metadata for analysis}
 \usage{
 derive_meta(
-  borealis,
+  eos,
   column_definitions = NULL,
   automated = FALSE,
   impute = FALSE,
@@ -13,11 +13,11 @@ derive_meta(
 )
 }
 \arguments{
-\item{borealis}{borealis object initialised with \code{initialise_borealis()}}
+\item{eos}{eos object initialised with \code{initialise_eos()}}
 
 \item{column_definitions}{optional named list with elements ID, Sex, Age,
 Confounders (or Confounder), and independants (or independant) — column indices
-into \code{borealis$meta}. When supplied, these are used as-is with no
+into \code{eos$meta}. When supplied, these are used as-is with no
 detection or automated overwrite.}
 
 \item{automated}{if TRUE and \code{column_definitions} is NULL, detect ID/Sex/Age,
@@ -31,7 +31,7 @@ arguments will be passed to \code{mice::mice()}. if FALSE, missing data will
 be removed}
 }
 \value{
-borealis object for subsequent analyses
+eos object for subsequent analyses
 }
 \description{
 Automatically detects identifiers, sex, and age. Identifiers are detected as

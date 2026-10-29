@@ -8,6 +8,8 @@
 #' @param x_title x axis title.
 #' @param y_title y axis title,
 #' @param show_legend if TRUE, show legend on right side.
+#' @param legend_size legend text size. Applied before the legend grob is extracted.
+#' @param axis_title_size axis title text size on the scatter panel.
 #'
 #' @return ggplot2 object
 #'
@@ -15,10 +17,10 @@
 #' @import ggpubr
 #' @export
 
-biplot = function(x, y, group_by_colour = NULL, col_manual = NULL, group_by_shape = NULL, x_title = NULL, y_title = NULL, show_legend = TRUE){
+biplot = function(x, y, group_by_colour = NULL, col_manual = NULL, group_by_shape = NULL, x_title = NULL, y_title = NULL, show_legend = TRUE, legend_size = NULL, axis_title_size = NULL, point_size = NULL){
   # create biplots - maybe have this as a separate function
   df = data.frame(x = x, y = y)
-  custom_theme = get_theme(); shapes_manual = c(16,17,15,18,5,8,3,4,2,0)
+  custom_theme = get_theme(legend_size = legend_size, axis_title_size = axis_title_size); shapes_manual = c(16,17,15,18,5,8,3,4,2,0)
 
   if(is.null(group_by_colour)){
     col_manual = get_palette()[8]
@@ -41,16 +43,23 @@ biplot = function(x, y, group_by_colour = NULL, col_manual = NULL, group_by_shap
     scale_color_manual(values = col_manual) + scale_fill_manual(values = col_manual) + scale_shape_manual(values = shapes_manual) +
     xlab(x_title) + ylab(y_title) + custom_theme +
     theme(legend.position = "right",
+          legend.text = element_text(size = legend_size),
+          axis.title.x = element_text(size = axis_title_size),
+          axis.title.y = element_text(size = axis_title_size),
           legend.box.background = element_rect(colour = custom_theme$panel.border@colour),
           legend.box.margin = margin(t = 5, r = 5, b = 5, l = 5, unit = "pt"))
 
   if(is.null(group_by_colour)){
-    scatter = scatter + geom_point(alpha = 0.7, col = col_manual)
+    scatter = scatter + geom_point(alpha = 0.7, col = col_manual, size = ifelse(!is.null(point_size), point_size, 1.5))
   } else {
-    scatter = scatter + geom_point(alpha = 0.7) + stat_ellipse(type = "norm", geom = "polygon", alpha = 0.1, col = NA)}
+    scatter = scatter + geom_point(alpha = 0.7, size = ifelse(!is.null(point_size), point_size, 1.5)) + stat_ellipse(type = "norm", geom = "polygon", alpha = 0.1, col = NA)}
 
   x_density = plotdensity(x = x, group_by_colour = group_by_colour, col_manual = col_manual, lim = layer_scales(scatter)$x$get_limits())
-  y_density = plotdensity(x = y, group_by_colour = group_by_colour, col_manual = col_manual, , lim = layer_scales(scatter)$y$get_limits()) + theme(axis.title.y = element_blank(), plot.margin = margin(r=5))
+  right_marg = 5
+  if(!is.null(axis_title_size))
+    right_marg = right_marg + axis_title_size
+
+  y_density = plotdensity(x = y, group_by_colour = group_by_colour, col_manual = col_manual, lim = layer_scales(scatter)$y$get_limits()) + theme(axis.title.y = element_blank(), plot.margin = margin(b = right_marg))
 
   blank_plot = ggplot() + theme_void()
   combined = ggarrange(x_density, blank_plot, scatter, y_density + coord_flip(), heights = c(1,4), widths = c(4,1), legend = "none")

@@ -6,6 +6,8 @@
 #' @param col_manual colours for unique values of group_by_colour. If NULL, use default colours.
 #' @param group_by_shape groups to split by shape in biplots (vector of length n).
 #' @param show_legend if TRUE, show legend on right side.
+#' @param legend_size legend text size passed to biplot(). Must be set here because the returned plot is a ggarrange grob, not a ggplot.
+#' @param axis_title_size axis title size passed to biplot().
 #' @param mean_shape if provided with atlas_lmks, create mesh3d objects to visualize each PC specified in pcs.
 #' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualize each PC specified in pcs.
 #' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each PC specified in pcs. Necessary if the atlas_lmks != atlas_mesh vertices.
@@ -21,6 +23,9 @@ visualise_pcs = function(pca,
                          col_manual = NULL,
                          group_by_shape = NULL,
                          show_legend = TRUE,
+                         legend_size = NULL,
+                         axis_title_size = NULL,
+                         point_size = NULL,
                          mean_shape = NULL,
                          atlas_mesh = NULL,
                          atlas_lmks = NULL,
@@ -49,7 +54,8 @@ visualise_pcs = function(pca,
       yvar = round(pca$sdev[yindex]^2/sum(pca$sdev^2)*100, 1)
 
       plots[[paste0("PC",xindex,"vs",yindex)]] = suppressWarnings(biplot(pca$x[,xindex], pca$x[,yindex], group_by_colour = group_by_colour, col_manual = col_manual, group_by_shape = group_by_shape,
-                                                                         x_title = paste0("PC", xindex, " (", xvar,"%)"), y_title = paste0("PC", yindex, " (", yvar,"%)")))}
+                                                                         x_title = paste0("PC", xindex, " (", xvar,"%)"), y_title = paste0("PC", yindex, " (", yvar,"%)"), point_size = point_size,
+                                                                         show_legend = show_legend, axis_title_size=axis_title_size))}
     for (i in pcs){
       plots[[paste0("PC",i)]] = plotdensity(pca$x[,i], group_by_colour = group_by_colour, col_manual = col_manual, title = paste0("PC",i, " (", round(pca$sdev[i]^2/sum(pca$sdev^2)*100, 1), "%)"), show_legend = TRUE)}
   }

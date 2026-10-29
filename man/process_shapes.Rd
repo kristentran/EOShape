@@ -5,7 +5,7 @@
 \title{Process shape data}
 \usage{
 process_shapes(
-  borealis,
+  eos,
   symmetrize = NULL,
   correction = "None",
   silence = FALSE,
@@ -13,7 +13,7 @@ process_shapes(
 )
 }
 \arguments{
-\item{borealis}{borealis object after metadata detection}
+\item{eos}{eos object after metadata detection}
 
 \item{symmetrize}{NULL, "Detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.}
 
@@ -22,7 +22,7 @@ process_shapes(
 \item{silence}{if TRUE, suppress printed messages from process_shapes and internal calls.}
 }
 \value{
-borealis object for subsequent analyses
+eos object for subsequent analyses
 }
 \description{
 Process shape data before testing. First, symmetrize data using

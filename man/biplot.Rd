@@ -12,7 +12,10 @@ biplot(
   group_by_shape = NULL,
   x_title = NULL,
   y_title = NULL,
-  show_legend = TRUE
+  show_legend = TRUE,
+  legend_size = NULL,
+  axis_title_size = NULL,
+  point_size = NULL
 )
 }
 \arguments{
@@ -31,6 +34,10 @@ biplot(
 \item{y_title}{y axis title,}
 
 \item{show_legend}{if TRUE, show legend on right side.}
+
+\item{legend_size}{legend text size. Applied before the legend grob is extracted.}
+
+\item{axis_title_size}{axis title text size on the scatter panel.}
 }
 \value{
 ggplot2 object

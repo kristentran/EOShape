@@ -1,5 +1,5 @@
-Package: CranioMorph
-Title: Geometric morphometric analysis of 3D Craniofacial Morphology
+Package: EOS
+Title: Exploration of Shape: Geometric morphometric analysis of 3D Shapes
 Version: 0.0.1.9000
 Authors@R: 
     person("Kristen", "Tran", , "kristen.tran1@ucalgary.ca", role = c("aut", "cre"))
@@ -18,7 +18,7 @@ Imports:
   rgl,
   abind,
   crayon,
-  paran
+  PCAtools
 Config/roxygen2/version: 8.1.0
 Depends: 
     R (>= 3.5)

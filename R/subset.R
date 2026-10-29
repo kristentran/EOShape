@@ -1,17 +1,17 @@
-#' Subset a borealis object
+#' Subset an eos object
 #'
-#' `[i, j]` subset borealis object by individuals (i) or landmarks (j)
+#' `[i, j]` subset eos object by individuals (i) or landmarks (j)
 #'
-#' @param x A `borealis` object.
+#' @param x A `eos` object.
 #' @param i,j Subsetting indices.
 #' @param ...,drop Additional arguments passed to the method.
 #'
 #' @return A subset of `x`.
 #'
 #' @export
-#' @method [ borealis
+#' @method [ eos
 
-`[.borealis` = function(x, i, j, ..., drop = FALSE) {
+`[.eos` = function(x, i, j, ..., drop = FALSE) {
   if ("pca" %in% names(x))
     warning("PC space was constructed using original landmarks/sample. Rerun process_shapes if PCA should be redone with new subset.")
 

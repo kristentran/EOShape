@@ -30,9 +30,9 @@ query_data = function(
 
   resolve_source_dir <- function(species) {
     env_key <- if (species == "mm") {
-      "CRANIOMORPH_MM_DATA_PATH"
+      "EOS_MM_DATA_PATH"
     } else {
-      "CRANIOMORPH_HS_DATA_PATH"
+      "EOS_HS_DATA_PATH"
     }
 
     env_path <- trimws(Sys.getenv(env_key, unset = ""))
@@ -43,7 +43,7 @@ query_data = function(
     default_file <- system.file(
       "extdata",
       paste0("pathto", toupper(species), "data.txt"),
-      package = "CranioMorph"
+      package = "EOS"
     )
 
     if (!nzchar(default_file)) {
