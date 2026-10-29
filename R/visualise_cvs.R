@@ -1,15 +1,15 @@
 #' Visualise CVA
 #'
 #' @param cva CVA object from Morpho::CVA
-#' @param cvs vector specifying the CVs to visualize. If NULL, all CVs will be visualized.
+#' @param cvs vector specifying the CVs to visualise. If NULL, all CVs will be visualised.
 #' @param group_by_colour groups to split by colour in biplots and density plots (vector of length n).
 #' @param col_manual colours for unique values of group_by_colour. If NULL, use default colours.
 #' @param group_by_shape groups to split by shape in biplots (vector of length n).
 #' @param show_legend if TRUE, show legend on right side.
 #' @param mean_shape mean shape corresponding to PCA rotation. Provide
 #' @param pca_rotation rotation matrix from PCA to convert back to real shapes for mesh3d objects. Necessary if the data input to CVA were PC scores.
-#' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualize each CV specified in cvs.
-#' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each CV specified in cvs. Necessary if the atlas_lmks != atlas_mesh vertices.
+#' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualise each CV specified in cvs.
+#' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualise each CV specified in cvs. Necessary if the atlas_lmks != atlas_mesh vertices.
 #'
 #' @return plots contains density and biplots for all CVs.
 #' @return morphs mesh3d objects of shapes reflecting scores of -3 and +3 along each CV.
@@ -66,17 +66,24 @@ visualise_cvs = function(cva,
     # CALCULATING SHAPES
     # Decide scores to visualise: if there are 2 groups, visualise group mean scores, else +/- 3SD
     if(length(levels(cva$groups)) == 2){ # 2 levels = 1 CV therefore it doesn't matter that groupmeans is all CVs compared to per CV in the else condition.
-      # ascending order of mean PC scores
-      for(j in nrow(cva$groupmeans)){
-        tmpshape = cva$groupmeans[j,]
+      # save mean CV score by group to vis_score
+      vis_score = tapply(cva$CVscores[, i], cva$groups, mean)
+      # group with the lower mean CV score is "min", the higher is "max"
+      ordered_groups = names(sort(vis_score))
+      for(extreme in c("min", "max")){
+        group = ordered_groups[ifelse(extreme == "min", 1, 2)]
+        tmpshape = cva$groupmeans[group,]
         if(!is.null(mean_shape) & !is.null(pca_rotation)){
           # if pc scores provided
           tmpshape = mean_shape + convert(t(as.matrix(pca_rotation) %*% tmpshape))
+        } else {
+          tmpshape = convert(tmpshape)
         }
-        morphs[[rownames(cva$groupmeans)[j]]] = tmpshape
+        if(!is.null(atlas_mesh)){
+          tmpshape = shapeshifter(tmpshape, atlas_mesh, atlas_lmks)
+        }
+        morphs[[paste0("CV",i,"_",extreme)]] = tmpshape
       }
-      # save mean CV score by group to vis_score
-      vis_score = tapply(cva$CVscores[, i], cva$groups, mean)
     } else {
       vis_score = c(-3, 3)*sd(cva$CVscores[,i]) + mean(cva$CVscores[,i])
 

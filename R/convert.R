@@ -46,7 +46,7 @@ convert = function(lmks, convert_always = FALSE, silence = TRUE){
       if(!silence){cat(blue("Landmarks detected as p x k x n array. Nothing to convert.\n"))}
     }
   } else {
-    stop("Landmark format not recognized")
+    stop("Landmark format not recognised")
   }
   return(lmks)
 }

@@ -30,7 +30,7 @@ residualise(
 covariate set is retained, and always apply the correction even if no terms
 are significant.}
 
-\item{group}{vector of same length as shapes and cov. If provided, perform shape correction independantly (within groups).}
+\item{group}{vector of same length as shapes and cov. If provided, perform shape correction independently (within groups).}
 
 \item{silence}{if TRUE, suppress printed messages from evaluate_model().}
 }

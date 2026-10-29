@@ -6,7 +6,7 @@
 \usage{
 process_shapes(
   eos,
-  symmetrize = NULL,
+  symmetrise = NULL,
   correction = "None",
   silence = FALSE,
   ...
@@ -15,7 +15,7 @@ process_shapes(
 \arguments{
 \item{eos}{eos object after metadata detection}
 
-\item{symmetrize}{NULL, "Detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.}
+\item{symmetrise}{NULL, "detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.}
 
 \item{correction}{"None", "Pooled", or variable (as column name) to split data.}
 
@@ -25,7 +25,7 @@ process_shapes(
 eos object for subsequent analyses
 }
 \description{
-Process shape data before testing. First, symmetrize data using
+Process shape data before testing. First, symmetrise data using
 \code{detect_symmetry()} (see below for details); Next, superimpose shapes
 using procSym. If symmetric pairs are given, pass to procSym and extract
 symmetric landmarks. If use_PC_scores = TRUE, PC scores will be extracted as

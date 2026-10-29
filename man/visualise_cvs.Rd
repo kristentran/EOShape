@@ -21,7 +21,7 @@ visualise_cvs(
 \arguments{
 \item{cva}{CVA object from Morpho::CVA}
 
-\item{cvs}{vector specifying the CVs to visualize. If NULL, all CVs will be visualized.}
+\item{cvs}{vector specifying the CVs to visualise. If NULL, all CVs will be visualised.}
 
 \item{group_by_colour}{groups to split by colour in biplots and density plots (vector of length n).}
 
@@ -35,9 +35,9 @@ visualise_cvs(
 
 \item{pca_rotation}{rotation matrix from PCA to convert back to real shapes for mesh3d objects. Necessary if the data input to CVA were PC scores.}
 
-\item{atlas_mesh}{if provided with mean_shape, create mesh3d objects to visualize each CV specified in cvs.}
+\item{atlas_mesh}{if provided with mean_shape, create mesh3d objects to visualise each CV specified in cvs.}
 
-\item{atlas_lmks}{if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each CV specified in cvs. Necessary if the atlas_lmks != atlas_mesh vertices.}
+\item{atlas_lmks}{if provided with mean_shape and atlas_mesh, create mesh3d objects to visualise each CV specified in cvs. Necessary if the atlas_lmks != atlas_mesh vertices.}
 }
 \value{
 plots contains density and biplots for all CVs.

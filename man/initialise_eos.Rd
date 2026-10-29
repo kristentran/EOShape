@@ -2,7 +2,7 @@
 % Please edit documentation in R/initialise_eos.R
 \name{initialise_eos}
 \alias{initialise_eos}
-\title{Initialize data object for automated analysis}
+\title{Initialise data object for automated analysis}
 \usage{
 initialise_eos(
   data,
@@ -15,7 +15,7 @@ initialise_eos(
 \arguments{
 \item{data}{list object containing "lmks" as 3D array and "meta" as a data frame.}
 
-\item{atlas_mesh}{mesh of atlas for visualization. Provide if using package from R.}
+\item{atlas_mesh}{mesh of atlas for visualisation. Provide if using package from R.}
 
 \item{atlas_lmks}{landmarks associated with atlas_mesh. Provide if using package from R and if landmarks =/= vertices from mesh.}
 }
@@ -23,6 +23,6 @@ initialise_eos(
 eos object for subsequent analyses using the EOS package
 }
 \description{
-Initialize eos object with a list object containing "lmks" as 3D array and "meta" as a data.frame.
+Initialise eos object with a list object containing "lmks" as 3D array and "meta" as a data.frame.
 Constant variables in meta will be dropped (i.e., variables with the same value across all individuals).
 }

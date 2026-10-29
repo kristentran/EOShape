@@ -8,11 +8,11 @@
 #'
 #' @param eos eos object initialised with \code{initialise_eos()}
 #' @param column_definitions optional named list with elements ID, Sex, Age,
-#'   Confounders (or Confounder), and independants (or independant) — column indices
+#'   Confounders (or Confounder), and independents (or independent) — column indices
 #'   into \code{eos$meta}. When supplied, these are used as-is with no
 #'   detection or automated overwrite.
 #' @param automated if TRUE and \code{column_definitions} is NULL, detect ID/Sex/Age,
-#'  take the first remaining column as the independant, and assume no confounders.
+#'  take the first remaining column as the independent, and assume no confounders.
 #'  If FALSE and \code{column_definitions} is NULL, prompt interactively.
 #'  Ignored for column selection when \code{column_definitions} is supplied
 #'  (still skips interactive confirmation when TRUE).
@@ -80,7 +80,7 @@ derive_meta = function(eos, column_definitions = NULL, automated = FALSE, impute
   accepted = FALSE
 
   # Names of special columns
-  colspec = c("ID", "Sex", "Age", "Confounder", "Independant")
+  colspec = c("ID", "Sex", "Age", "Confounder", "Independent")
 
   while(!accepted){
     if(!is.null(column_definitions)){ # if provided, use as-is
@@ -115,15 +115,15 @@ derive_meta = function(eos, column_definitions = NULL, automated = FALSE, impute
       else
         log = c(log, paste0("Age automatically detected as column: ", Age_col))
 
-      # if automated, detect the first column of the remaining columns as independant, and no extra confounders
+      # if automated, detect the first column of the remaining columns as independent, and no extra confounders
       if(automated){
         remaining = setdiff(seq_len(n_col), c(ID_col, Sex_col, Age_col))
-        Independant_col = if(length(remaining)) remaining[[1]] else numeric(0)
+        Independent_col = if(length(remaining)) remaining[[1]] else numeric(0)
         Confounder_col = numeric(0)
-        log = c(log, paste0("Independant variable automatically detected as column: ", Independant_col), "No extra confounder variables used.")
+        log = c(log, paste0("Independent variable automatically detected as column: ", Independent_col), "No extra confounder variables used.")
       } else {
         Confounder_col = prompt_cols("Confounder", allow_multiple = TRUE)
-        Independant_col = prompt_cols("Independant", allow_multiple = TRUE)
+        Independent_col = prompt_cols("Independent", allow_multiple = TRUE)
       }
     }
 
@@ -137,7 +137,7 @@ derive_meta = function(eos, column_definitions = NULL, automated = FALSE, impute
       if(!length(idx)) next
       df = extracted[, idx, drop = FALSE]
       prefix = tolower(gsub("_col", "", colu))
-      names(df) = if(prefix %in% c("confounder", "independant")) paste0(prefix, "_", names(df)) else prefix
+      names(df) = if(prefix %in% c("confounder", "independent")) paste0(prefix, "_", names(df)) else prefix
       # if columns look numeric, then convert
       for(j in seq_along(df)){
         if(is_numeric_like(df[[j]]))

@@ -7,7 +7,7 @@
 #' @param method chosen method to reduce dimensionality of PCs. See description of function for more details.
 #' @param reduce if TRUE, truncate all PCA outputs to the threshold PC.
 #' @param threshold PC threshold. If provided, the function will skip the dimensionality reduction method and truncate the PCs directly. Useful if parallel or scree analysis was already performed for your data.
-#' @param fromWeb If TRUE, do not return any visualization objects
+#' @param fromWeb If TRUE, do not return any visualisation objects
 #' @param atlas_mesh If provided, mesh3d objects will be created to view morphs along the threshold PC.
 #' @param atlas_lmks If provided with atlas_mesh, mesh3d objects will be created to view morphs along the threshold PC. Only necessary for mouse data.
 #' @param silence if TRUE, suppress printed messages and scree plot display.

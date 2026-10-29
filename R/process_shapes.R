@@ -1,6 +1,6 @@
 #' Process shape data
 #'
-#' Process shape data before testing. First, symmetrize data using
+#' Process shape data before testing. First, symmetrise data using
 #' \code{detect_symmetry()} (see below for details); Next, superimpose shapes
 #' using procSym. If symmetric pairs are given, pass to procSym and extract
 #' symmetric landmarks. If use_PC_scores = TRUE, PC scores will be extracted as
@@ -8,7 +8,7 @@
 #' variables included: sex, age, and centroid size).
 #'
 #' @param eos eos object after metadata detection
-#' @param symmetrize NULL, "Detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.
+#' @param symmetrise NULL, "detect" to use detect.symmetry from MVG's package, or a data frame|matrix with two columns that specify landmark pairings by row. This is provided to the pairedLM argument of Morpho::procSym.
 #' @param correction "None", "Pooled", or variable (as column name) to split data.
 #' @param silence if TRUE, suppress printed messages from process_shapes and internal calls.
 #'
@@ -17,14 +17,14 @@
 #' @export
 #'
 
-process_shapes = function(eos, symmetrize = NULL, correction = "None", silence = FALSE, ...){
+process_shapes = function(eos, symmetrise = NULL, correction = "None", silence = FALSE, ...){
   if(!inherits(eos, "eos"))
     stop("Object provided is not an eos object. Please create using initialise_eos().")
-  if(!is.null(symmetrize) && !any(symmetrize == "detect", is.matrix(symmetrize), is.data.frame(symmetrize)))
-    stop("symmetrize must be 'detect' or a data frame/matrix with two columns that specify landmark pairings by row.")
-  independants = gsub("independant_", "", colnames(eos$meta)[grepl("independant", colnames(eos$meta))])
-  correction = gsub("independant_", "", correction)
-  if(!any(correction %in% c("None", "Pooled", independants)))
+  if(!is.null(symmetrise) && !(identical(symmetrise, "detect") || is.matrix(symmetrise) || is.data.frame(symmetrise)))
+    stop("symmetrise must be 'detect' or a data frame/matrix with two columns that specify landmark pairings by row.")
+  independents = gsub("independent_", "", colnames(eos$meta)[grepl("independent", colnames(eos$meta))])
+  correction = gsub("independent_", "", correction)
+  if(!any(correction %in% c("None", "Pooled", independents)))
     stop("correction argument should be 'None', 'Pooled', or the column name of the group to split data.")
   if(!is.logical(silence) || length(silence) > 1)
     stop("silence parameters must be single value logicals")
@@ -32,30 +32,30 @@ process_shapes = function(eos, symmetrize = NULL, correction = "None", silence =
   log = c()
 
   if(!eos$analysis_params$aligned){
-  ## SYMMETRIZE ##
+  ## SYMMETRISE ##
   # if NULL, don't provide any argument to procSym
   # if "detect" use detect_symmetry
   # if data frame or matrix with two columns, directly send to procSym
   # if 748, get_symmetric_pairs()
-    if(!is.null(symmetrize) && symmetrize == "detect"){
+    if(identical(symmetrise, "detect")){
       if(dim(eos$lmks)[1] == 748){
         sympair = as.matrix(sympair_748)
         if(!silence)
           cat("748 landmarks detected... using BH lab's symmetric pairings")
-        log = c(log, "748 landmarks detected... used BH lab's symmetric pairings to symmetrize data.")
+        log = c(log, "748 landmarks detected... used BH lab's symmetric pairings to symmetrise data.")
       } else {
         # detect
         if(!silence)
           cat("Detecting landmarks... please be sure to evaluate results.")
         sympair = as.matrix(detect.symmetry(eos$lmks, plot = FALSE)$pairedLM)
-        log = c(log, "Symmetric landmark pairs automatically detected to symmetrize data.")
+        log = c(log, "Symmetric landmark pairs automatically detected to symmetrise data.")
       }
-    } else if(!is.null(symmetrize) && (is.data.frame(symmetrize) || is.matrix(symmetrize()))){
-      sympair = as.matrix(symmetrize)
-      log = c(log, "Provided symmetric pairs used to symmetrize data.")
+    } else if(!is.null(symmetrise) && (is.data.frame(symmetrise) || is.matrix(symmetrise))){
+      sympair = as.matrix(symmetrise)
+      log = c(log, "Provided symmetric pairs used to symmetrise data.")
     } else {
       sympair = NULL
-      log = c(log, "Data was NOT symmetrized.")
+      log = c(log, "Data was NOT symmetrised.")
     }
 
     ## PROCRUSTES SUPERIMPOSITION ##
@@ -76,7 +76,7 @@ process_shapes = function(eos, symmetrize = NULL, correction = "None", silence =
 
     eos$analysis_params$aligned = TRUE
   } else {
-    log = c(log, "Data marked as aligned... skipping symmetrization and Procrustes superimposition.")
+    log = c(log, "Data marked as aligned... skipping symmetrisation and Procrustes superimposition.")
     aligned = eos$lmks
   }
 
@@ -119,13 +119,13 @@ process_shapes = function(eos, symmetrize = NULL, correction = "None", silence =
     }
 
     # Create covariate data frame
-    # done this way (as opposed to !independants) to ensure a consistent order of covariates
+    # done this way (as opposed to !independents) to ensure a consistent order of covariates
     covs = cbind(eos$meta[,colnames(eos$meta) %in% c("sex", "size"), drop = FALSE],
                  eos$meta[,grepl("age", colnames(eos$meta)), drop = FALSE],
                  eos$meta[,grepl("confounder", colnames(eos$meta)), drop = FALSE])
 
     # set up groups if correction is not set to pooled
-    group_split = if(correction == "Pooled") NULL else eos$meta[,paste0("independant_", correction)]
+    group_split = if(correction == "Pooled") NULL else eos$meta[,paste0("independent_", correction)]
     mod = residualise(eos$shapes, covs = covs, interactions = TRUE, group = group_split, silence = silence, ...)
     # save corrected shapes and log from residualise
     eos$shapes = mod$corrected_shapes

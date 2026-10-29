@@ -24,7 +24,7 @@ trim(
 
 \item{threshold}{PC threshold. If provided, the function will skip the dimensionality reduction method and truncate the PCs directly. Useful if parallel or scree analysis was already performed for your data.}
 
-\item{fromWeb}{If TRUE, do not return any visualization objects}
+\item{fromWeb}{If TRUE, do not return any visualisation objects}
 
 \item{atlas_mesh}{If provided, mesh3d objects will be created to view morphs along the threshold PC.}
 

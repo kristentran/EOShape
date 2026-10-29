@@ -1,4 +1,4 @@
-symmetrize_wrapper <- function(lmks){
+symmetrise_wrapper <- function(lmks){
   rem <- c(337:430,  94, 325) # These are duplicated or extra landmarks.
 
   # First, check how many landmarks
@@ -9,7 +9,7 @@ symmetrize_wrapper <- function(lmks){
     stop("Check the number of landmarks")
   }
 
-  # Symmetrize landmarks...
+  # Symmetrise landmarks...
   sym <- readRDS("inst/extdata/MM_landmark_sym.Rds")
   require(Morpho)
   sym_lmks <- Morpho::symmetrize(lmks, as.matrix(sym$sym.pairings))

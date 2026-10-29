@@ -5,7 +5,7 @@
 #' @param species select from mouse (mm) or human (hs) database.
 #' @param dataset from selected database, choose specific dataset to query or "all"; if not provided, then function will prompt user to choose from all available datasets.
 #' @param lmk_set for human data, choose dense or sparse landmark sets.
-#' @param symmetrized for human data, choose the original (FALSE) or symmetric (TRUE) dataset.
+#' @param symmetrised for human data, choose the original (FALSE) or symmetric (TRUE) dataset.
 #' @param drop_missing if TRUE, drop individuals/samples without matching landmark and metadata.
 #'
 #' @return lmks landmarks as p x k x n array.
@@ -20,7 +20,7 @@ query_data = function(
     species = c("mm", "hs"),
     dataset = NULL,
     lmk_set = "dense",
-    symmetrized = TRUE,
+    symmetrised = TRUE,
     drop_missing = TRUE
     # TODO: add age filtering - important for when embryo landmark data is compatible
     # stage = c("all", "adults", "juvenile"),
@@ -139,9 +139,9 @@ query_data = function(
     # Read entire dataset (since it is a prepared .rds file)
     lmks_path = list.files(source_dir, "*.rds")
     lmks_path = lmks_path[grepl(ifelse(lmk_set == "dense", "5k", "63"), lmks_path)]
-    lmks_path = ifelse(symmetrized, lmks_path[grepl("symmetric", lmks_path)], lmks_path[grepl("original", lmks_path)])
+    lmks_path = ifelse(symmetrised, lmks_path[grepl("symmetric", lmks_path)], lmks_path[grepl("original", lmks_path)])
     if(is.na(lmks_path)) # stop if no dataset found
-      stop("The dataset with the queried parameters does not exist: ", lmk_set, " and ", ifelse(symmetrized, "symmetrized", "nonsymmetrized"))
+      stop("The dataset with the queried parameters does not exist: ", lmk_set, " and ", ifelse(symmetrised, "symmetrised", "nonsymmetrised"))
     if(length(lmks_path) > 1){
       cat("Multiple datasets were found. Please select from the following:\n")
       indexed_path = paste0("[",seq(1:length(lmks_path)),"]: ", lmks_path,"\n")

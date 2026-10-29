@@ -23,7 +23,7 @@ visualise_pcs(
 \arguments{
 \item{pca}{pca object from prcomp or trim.}
 
-\item{pcs}{vector specifying the PCs to visualize. If NULL, all PCs will be visualized.}
+\item{pcs}{vector specifying the PCs to visualise. If NULL, all PCs will be visualised.}
 
 \item{group_by_colour}{groups to split by colour in biplots and density plots (vector of length n).}
 
@@ -37,11 +37,11 @@ visualise_pcs(
 
 \item{axis_title_size}{axis title size passed to biplot().}
 
-\item{mean_shape}{if provided with atlas_lmks, create mesh3d objects to visualize each PC specified in pcs.}
+\item{mean_shape}{if provided with atlas_lmks, create mesh3d objects to visualise each PC specified in pcs.}
 
-\item{atlas_mesh}{if provided with mean_shape, create mesh3d objects to visualize each PC specified in pcs.}
+\item{atlas_mesh}{if provided with mean_shape, create mesh3d objects to visualise each PC specified in pcs.}
 
-\item{atlas_lmks}{if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each PC specified in pcs. Necessary if the atlas_lmks != atlas_mesh vertices.}
+\item{atlas_lmks}{if provided with mean_shape and atlas_mesh, create mesh3d objects to visualise each PC specified in pcs. Necessary if the atlas_lmks != atlas_mesh vertices.}
 }
 \value{
 plots contains density and biplots for all PCs.

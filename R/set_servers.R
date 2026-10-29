@@ -31,7 +31,7 @@ set_servers = function(path, storage, renviron_path = "~/.Renviron", create = TR
     path <- paste0(path, suffix)
   }
 
-  # Normalize path for consistency (keep as entered if normalization fails)
+  # Normalise path for consistency (keep as entered if normalisation fails)
   norm_path <- tryCatch(normalizePath(path, winslash = "/", mustWork = FALSE),
                         error = function(e) path)
 

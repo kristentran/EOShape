@@ -8,7 +8,7 @@ query_data(
   species = c("mm", "hs"),
   dataset = NULL,
   lmk_set = "dense",
-  symmetrized = TRUE,
+  symmetrised = TRUE,
   drop_missing = TRUE
 )
 }
@@ -19,7 +19,7 @@ query_data(
 
 \item{lmk_set}{for human data, choose dense or sparse landmark sets.}
 
-\item{symmetrized}{for human data, choose the original (FALSE) or symmetric (TRUE) dataset.}
+\item{symmetrised}{for human data, choose the original (FALSE) or symmetric (TRUE) dataset.}
 
 \item{drop_missing}{if TRUE, drop individuals/samples without matching landmark and metadata.}
 }

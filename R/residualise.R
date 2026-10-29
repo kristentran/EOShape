@@ -15,7 +15,7 @@
 #' @param force if TRUE, pass \code{force} to \code{evaluate_model()} so the full
 #'   covariate set is retained, and always apply the correction even if no terms
 #'   are significant.
-#' @param group vector of same length as shapes and cov. If provided, perform shape correction independantly (within groups).
+#' @param group vector of same length as shapes and cov. If provided, perform shape correction independently (within groups).
 #' @param silence if TRUE, suppress printed messages from evaluate_model().
 #'
 #' @return model model used for shape correction.

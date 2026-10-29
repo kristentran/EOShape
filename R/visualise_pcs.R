@@ -1,16 +1,16 @@
 #' Visualise CVA
 #'
 #' @param pca pca object from prcomp or trim.
-#' @param pcs vector specifying the PCs to visualize. If NULL, all PCs will be visualized.
+#' @param pcs vector specifying the PCs to visualise. If NULL, all PCs will be visualised.
 #' @param group_by_colour groups to split by colour in biplots and density plots (vector of length n).
 #' @param col_manual colours for unique values of group_by_colour. If NULL, use default colours.
 #' @param group_by_shape groups to split by shape in biplots (vector of length n).
 #' @param show_legend if TRUE, show legend on right side.
 #' @param legend_size legend text size passed to biplot(). Must be set here because the returned plot is a ggarrange grob, not a ggplot.
 #' @param axis_title_size axis title size passed to biplot().
-#' @param mean_shape if provided with atlas_lmks, create mesh3d objects to visualize each PC specified in pcs.
-#' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualize each PC specified in pcs.
-#' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualize each PC specified in pcs. Necessary if the atlas_lmks != atlas_mesh vertices.
+#' @param mean_shape if provided with atlas_lmks, create mesh3d objects to visualise each PC specified in pcs.
+#' @param atlas_mesh if provided with mean_shape, create mesh3d objects to visualise each PC specified in pcs.
+#' @param atlas_lmks if provided with mean_shape and atlas_mesh, create mesh3d objects to visualise each PC specified in pcs. Necessary if the atlas_lmks != atlas_mesh vertices.
 #'
 #' @return plots contains density and biplots for all PCs.
 #' @return morphs mesh3d objects of shapes reflecting scores of -3 and +3 along each PC.

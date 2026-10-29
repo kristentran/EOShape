@@ -6,9 +6,10 @@ This package is a work-in-progress and has only been tested on Ubuntu.
 - convert() Detects format of shapes and converts between 1d <-> 2d <-> 3d
 - residualise() Given select covariates, uses evaluate_model() to find best fitting linear model and then corrects shapes according to that model (residuals is added back to the mean)
   - evaluate_model() Given a linear model, detect which covariates are significant to find best fitting linear model
+- scrutinise() Test for differences in shape (or size) by independent variable(s) with a Procrustes ANOVA (geomorph::procD.lm). If there is one independent variable and the model is significant: post-hoc pairwise testing (if >2 levels) and CVA morphs (categorical), or morphs along the variable at +/- 3SD (continuous).
 - trim() Reduce dimensionality of shapes by parallel analysis (PCAtools::parallelPCA, default), scree plot (interactive), or a cumulative variance threshold
 - compare_axes() Measure alignment between mean shapes. - WORK IN PROGRESS
-- caliper() Measure linear distances in mouse crania, based on MusPO package (deritive of HPO package by CDS and JDA). Only functional using BHLab's landmark set. - WORK IN PROGRESS
+- caliper() Measure linear distances in mouse crania with MusPO::MeasureAll(). The group is the EOS independent variable. Requires derive_meta() only, and can be run at any later stage. Only functional using BHLab's landmark set.
 
 **Visualisation functions**
 *These are ggplot2 bassed figures*
@@ -31,6 +32,6 @@ This package is a work-in-progress and has only been tested on Ubuntu.
 *These functions operate based on an "EOS" class of object*
 - initialise_eos() Format landmarks and metadata into an EOS object; pass parameters for analysis.
 - derive_meta() Detect metadata columns (e.g. Sex, age, etc.); Removes constant variables from meta data. Indicate dependent and independent variables here.
-- process_shapes() Symmetrize (Morpho::, align (Morpho::procSym), and reduce dimensions of shape (reduce_shapes). Shape effects of select covariates as indicated in derive_meta() are removed using residualise().
-- find_diffs() Determine differences in size and shape. Uses procD.lm for AOV. If there is one independent variable: conducts post-hoc testing (if multiple levels). If shape effects are significant, then how groups differ will also be examined (e.g. CVA  or linear model).
+- process_shapes() Symmetrise (Morpho::, align (Morpho::procSym), and reduce dimensions of shape (reduce_shapes). Shape effects of select covariates as indicated in derive_meta() are removed using residualise().
+- find_diffs() Determine differences in size and shape by looping through scrutinise(). Uses procD.lm for AOV. If there is one independent variable: conducts post-hoc testing (if multiple levels). If shape effects are significant, then how groups differ will also be examined (e.g. CVA  or linear model).
 - subsetting method: [subjects,landmarks]
