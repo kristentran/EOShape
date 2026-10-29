@@ -21,7 +21,7 @@ visualise_pcs(
 )
 }
 \arguments{
-\item{pca}{pca object from prcomp or reduce_shapes.}
+\item{pca}{pca object from prcomp or trim.}
 
 \item{pcs}{vector specifying the PCs to visualize. If NULL, all PCs will be visualized.}
 

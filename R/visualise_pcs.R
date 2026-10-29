@@ -1,6 +1,6 @@
 #' Visualise CVA
 #'
-#' @param pca pca object from prcomp or reduce_shapes.
+#' @param pca pca object from prcomp or trim.
 #' @param pcs vector specifying the PCs to visualize. If NULL, all PCs will be visualized.
 #' @param group_by_colour groups to split by colour in biplots and density plots (vector of length n).
 #' @param col_manual colours for unique values of group_by_colour. If NULL, use default colours.

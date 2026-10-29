@@ -98,12 +98,12 @@ process_shapes = function(eos, symmetrize = NULL, correction = "None", silence =
   # if use PC scores if true, then replace shapes with pc_scores
   if(eos$analysis_params$use_PC_scores){
     # dim reduction is changable from analysis params
-    eos$pca = reduce_shapes(eos$lmks, silence = silence, method = eos$analysis_params$reduce_shapes_method, fromWeb = TRUE)
+    eos$pca = trim(eos$lmks, silence = silence, method = eos$analysis_params$reduce_shapes_method, fromWeb = TRUE)
     eos$shapes = eos$pca$x
     log = c(log, paste0("Shape space reduced to ", ncol(eos$pca$x), "PCs."))
   } else {
     # automatic PC selection is to truncate at 98% cumulative variance - silence this
-    eos$pca = reduce_shapes(eos$lmks, silence = TRUE, method = 98, fromWeb = TRUE)
+    eos$pca = trim(eos$lmks, silence = TRUE, method = 98, fromWeb = TRUE)
   }
 
   # get landmarks along first 4 PCs (capped at as many PCs exist)

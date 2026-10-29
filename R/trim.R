@@ -27,7 +27,7 @@
 #'
 #' @export
 
-reduce_shapes <- function(
+trim <- function(
     coords,
     method = "parallel",
     reduce = TRUE,
